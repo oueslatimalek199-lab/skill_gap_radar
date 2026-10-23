@@ -1,9 +1,10 @@
-// lib/fauth/sign_up_page.dart
+// lib/pages/auth/sign_up_page.dart
 import 'package:flutter/material.dart';
 
-import '../../../theme/app_theme.dart';
-import '../../../theme/theme_controller.dart';
-import '../../../widgets/radar_logo.dart';
+import '../../theme/app_theme.dart';
+import '../../theme/theme_controller.dart';
+import '../../widgets/radar_logo.dart';
+import 'login_page.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
@@ -259,7 +260,12 @@ class _SignUpPageState extends State<SignUpPage> {
                       Text('Already have an account?', style: text.bodyMedium),
                       TextButton(
                         onPressed: () {
-                          // TODO: navigate to LoginPage
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const LoginPage(),
+                            ),
+                          );
                         },
                         child: const Text('Log in'),
                       ),
