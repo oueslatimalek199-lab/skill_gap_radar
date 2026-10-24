@@ -1,9 +1,10 @@
 // lib/pages/auth/login_page.dart
 import 'package:flutter/material.dart';
 
-import '../../../theme/app_theme.dart';
-import '../../../theme/theme_controller.dart';
-import '../../../widgets/radar_logo.dart';
+import '../../theme/app_theme.dart';
+import '../../theme/theme_controller.dart';
+import '../../widgets/radar_logo.dart';
+import '../home/home_shell.dart';
 import 'sign_up_page.dart';
 
 class LoginPage extends StatefulWidget {
@@ -37,8 +38,19 @@ class _LoginPageState extends State<LoginPage> {
 
     if (!mounted) return;
     setState(() => _loading = false);
-    ScaffoldMessenger.of(context)
-        .showSnackBar(const SnackBar(content: Text('Logged in (demo)')));
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (_) => const HomeShell()),
+      (route) => false,
+    );
+  }
+
+  void _continueAsGuest() {
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (_) => const HomeShell(isGuest: true)),
+      (route) => false,
+    );
   }
 
   @override
@@ -146,9 +158,7 @@ class _LoginPageState extends State<LoginPage> {
 
                 // Guest
                 OutlinedButton(
-                  onPressed: () {
-                    // TODO: navigate to home in guest mode (local data)
-                  },
+                  onPressed: _continueAsGuest,
                   child: const Text('Continue as guest'),
                 ),
                 const SizedBox(height: AppSpacing.lg),
