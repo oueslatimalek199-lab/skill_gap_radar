@@ -1,11 +1,11 @@
 // lib/pages/home/home_shell.dart
 import 'package:flutter/material.dart';
 
+import '../../data/skills_store.dart';
 import '../../theme/app_theme.dart';
 import '../../theme/theme_controller.dart';
-import '../welcome/welcome_page.dart';
 import '../skills/my_skills_page.dart';
-import '../../data/skills_store.dart';
+import '../welcome/welcome_page.dart';
 
 class HomeShell extends StatefulWidget {
   final bool isGuest;
@@ -59,10 +59,6 @@ class _HomeShellState extends State<HomeShell> {
   }
 }
 
-// ---------------------------------------------------------------
-// Tabs (placeholders, we will replace them one by one)
-// ---------------------------------------------------------------
-
 class _HomeTab extends StatelessWidget {
   const _HomeTab();
 
@@ -70,36 +66,201 @@ class _HomeTab extends StatelessWidget {
   Widget build(BuildContext context) {
     final text = Theme.of(context).textTheme;
 
-    return ListView(
-      padding: const EdgeInsets.all(AppSpacing.lg),
-      children: [
-        Text('Welcome back', style: text.headlineLarge),
-        const SizedBox(height: AppSpacing.sm),
-                ValueListenableBuilder<List<String>>(
-          valueListenable: mySkills,
-          builder: (_, skills, __) => Text(
-            skills.isEmpty
-                ? 'Add your skills in the Profile tab to get started.'
-                : '${skills.length} skills ready for your next analysis.',
-            style: text.bodyMedium,
-          ),
-        ),
-        const SizedBox(height: AppSpacing.lg),
-        Card(
-          child: Padding(
-            padding: const EdgeInsets.all(AppSpacing.lg),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+    return ValueListenableBuilder<List<String>>(
+      valueListenable: mySkills,
+      builder: (_, skills, __) {
+        final skillCount = skills.length;
+        final ready = skillCount >= 2;
+
+        return ListView(
+          padding: const EdgeInsets.all(AppSpacing.lg),
+          children: [
+            Text('Welcome back', style: text.headlineLarge),
+            const SizedBox(height: AppSpacing.sm),
+            Text(
+              ready
+                  ? 'Your profile is ready for the next analysis.'
+                  : 'Add a few skills to start your profile.',
+              style: text.bodyMedium,
+            ),
+            const SizedBox(height: AppSpacing.lg),
+
+            // summary cards
+            Row(
               children: [
-                Text('Latest match', style: text.titleMedium),
-                const SizedBox(height: AppSpacing.sm),
-                Text('No analysis yet. Start from the Analyze tab.',
-                    style: text.bodyMedium),
+                Expanded(
+                  child: _StatCard(
+                    title: 'Skills',
+                    value: '$skillCount',
+                    color: AppColors.radarDeep,
+                  ),
+                ),
+                const SizedBox(width: AppSpacing.md),
+                Expanded(
+                  child: _StatCard(
+                    title: 'Match',
+                    value: ready ? '78%' : '--',
+                    color: AppColors.amber,
+                  ),
+                ),
               ],
             ),
+            const SizedBox(height: AppSpacing.lg),
+
+            // main card
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(AppSpacing.lg),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Latest match', style: text.titleMedium),
+                    const SizedBox(height: AppSpacing.sm),
+                    Text(
+                      ready
+                          ? 'Senior Flutter Developer • 78% compatibility'
+                          : 'No analysis yet. Go to Analyze to compare a job offer.',
+                      style: text.bodyMedium,
+                    ),
+                    const SizedBox(height: AppSpacing.md),
+                    if (ready)
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: FilledButton(
+                          onPressed: () {},
+                          child: const Text('View details'),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: AppSpacing.lg),
+
+            // skill list
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('My skills', style: text.titleMedium),
+                TextButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const MySkillsPage()),
+                    );
+                  },
+                  child: const Text('Manage'),
+                ),
+              ],
+            ),
+            const SizedBox(height: AppSpacing.sm),
+
+            if (skills.isEmpty)
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(AppSpacing.lg),
+                  child: Text(
+                    'No skills yet. Add your skills to improve your score.',
+                    style: text.bodyMedium,
+                  ),
+                ),
+              )
+            else
+              Wrap(
+                spacing: AppSpacing.sm,
+                runSpacing: AppSpacing.sm,
+                children: [
+                  for (final skill in skills)
+                    Chip(
+                      label: Text(skill),
+                      avatar: const Icon(Icons.check, size: 16),
+                    ),
+                ],
+              ),
+            const SizedBox(height: AppSpacing.lg),
+
+            // quick actions
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(AppSpacing.lg),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Quick actions', style: text.titleMedium),
+                    const SizedBox(height: AppSpacing.md),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: OutlinedButton.icon(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (_) => const MySkillsPage()),
+                              );
+                            },
+                            icon: const Icon(Icons.psychology_outlined),
+                            label: const Text('Add skills'),
+                          ),
+                        ),
+                        const SizedBox(width: AppSpacing.sm),
+                        Expanded(
+                          child: OutlinedButton.icon(
+                            onPressed: () {
+                              // TODO: open analyze flow
+                            },
+                            icon: const Icon(Icons.radar_outlined),
+                            label: const Text('Analyze'),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+class _StatCard extends StatelessWidget {
+  final String title;
+  final String value;
+  final Color color;
+
+  const _StatCard({
+    required this.title,
+    required this.value,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final text = Theme.of(context).textTheme;
+
+    return Container(
+      padding: const EdgeInsets.all(AppSpacing.md),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.12),
+        borderRadius: BorderRadius.circular(AppRadius.md),
+        border: Border.all(color: color.withOpacity(0.2)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(title, style: text.bodySmall),
+          const SizedBox(height: AppSpacing.sm),
+          Text(
+            value,
+            style: text.headlineMedium?.copyWith(
+              color: color,
+              fontWeight: FontWeight.w700,
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
@@ -168,7 +329,7 @@ class _ProfileTab extends StatelessWidget {
             onTap: toggleThemeMode,
           ),
         ),
-                const SizedBox(height: AppSpacing.md),
+        const SizedBox(height: AppSpacing.md),
         Card(
           child: ListTile(
             leading: const Icon(Icons.psychology_outlined),

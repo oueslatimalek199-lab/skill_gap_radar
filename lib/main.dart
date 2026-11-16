@@ -1,12 +1,9 @@
-// lib/main.dart
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import 'pages/welcome/welcome_page.dart';
 import 'theme/app_theme.dart';
 import 'theme/theme_controller.dart';
-import 'pages/auth/sign_up_page.dart';
-import 'pages/welcome/welcome_page.dart';
-
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -22,7 +19,6 @@ class SkillGapRadarApp extends StatelessWidget {
     return ValueListenableBuilder<ThemeMode>(
       valueListenable: themeModeNotifier,
       builder: (_, mode, __) {
-        // Make the status bar icons match the theme
         SystemChrome.setSystemUIOverlayStyle(
           mode == ThemeMode.dark
               ? SystemUiOverlayStyle.light
