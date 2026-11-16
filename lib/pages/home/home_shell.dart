@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import '../../theme/app_theme.dart';
 import '../../theme/theme_controller.dart';
 import '../welcome/welcome_page.dart';
+import '../skills/my_skills_page.dart';
+import '../../data/skills_store.dart';
 
 class HomeShell extends StatefulWidget {
   final bool isGuest;
@@ -73,7 +75,15 @@ class _HomeTab extends StatelessWidget {
       children: [
         Text('Welcome back', style: text.headlineLarge),
         const SizedBox(height: AppSpacing.sm),
-        Text('Your skill gaps will show up here.', style: text.bodyMedium),
+                ValueListenableBuilder<List<String>>(
+          valueListenable: mySkills,
+          builder: (_, skills, __) => Text(
+            skills.isEmpty
+                ? 'Add your skills in the Profile tab to get started.'
+                : '${skills.length} skills ready for your next analysis.',
+            style: text.bodyMedium,
+          ),
+        ),
         const SizedBox(height: AppSpacing.lg),
         Card(
           child: Padding(
@@ -156,6 +166,18 @@ class _ProfileTab extends StatelessWidget {
             ),
             title: Text(isDark ? 'Switch to light mode' : 'Switch to dark mode'),
             onTap: toggleThemeMode,
+          ),
+        ),
+                const SizedBox(height: AppSpacing.md),
+        Card(
+          child: ListTile(
+            leading: const Icon(Icons.psychology_outlined),
+            title: const Text('My skills'),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const MySkillsPage()),
+            ),
           ),
         ),
         const SizedBox(height: AppSpacing.lg),
