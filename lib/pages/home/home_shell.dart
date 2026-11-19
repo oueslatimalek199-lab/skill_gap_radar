@@ -1,11 +1,12 @@
-// lib/pages/home/home_shell.dart
 import 'package:flutter/material.dart';
 
 import '../../data/skills_store.dart';
 import '../../theme/app_theme.dart';
 import '../../theme/theme_controller.dart';
+import '../analyze/analyze_page.dart';
 import '../skills/my_skills_page.dart';
 import '../welcome/welcome_page.dart';
+import 'dashboard_page.dart';
 
 class HomeShell extends StatefulWidget {
   final bool isGuest;
@@ -21,12 +22,9 @@ class _HomeShellState extends State<HomeShell> {
   @override
   Widget build(BuildContext context) {
     final pages = [
-      const _HomeTab(),
-      const _PlaceholderTab(
-        icon: Icons.radar,
-        title: 'Analyze a job offer',
-        subtitle: 'Paste an offer here and compare it with your skills.',
-      ),
+      _HomeTab(onAnalyze: () => setState(() => _index = 2)),
+      const DashboardPage(),
+      const AnalyzePage(),
       _ProfileTab(isGuest: widget.isGuest),
     ];
 
@@ -42,6 +40,11 @@ class _HomeShellState extends State<HomeShell> {
             icon: Icon(Icons.home_outlined),
             selectedIcon: Icon(Icons.home),
             label: 'Home',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.insights_outlined),
+            selectedIcon: Icon(Icons.insights),
+            label: 'Dashboard',
           ),
           NavigationDestination(
             icon: Icon(Icons.radar_outlined),
@@ -60,7 +63,8 @@ class _HomeShellState extends State<HomeShell> {
 }
 
 class _HomeTab extends StatelessWidget {
-  const _HomeTab();
+  final VoidCallback onAnalyze;
+  const _HomeTab({required this.onAnalyze});
 
   @override
   Widget build(BuildContext context) {
@@ -68,7 +72,7 @@ class _HomeTab extends StatelessWidget {
 
     return ValueListenableBuilder<List<String>>(
       valueListenable: mySkills,
-      builder: (_, skills, __) {
+      builder: (_, skills, _) {
         final skillCount = skills.length;
         final ready = skillCount >= 2;
 
@@ -85,55 +89,11 @@ class _HomeTab extends StatelessWidget {
             ),
             const SizedBox(height: AppSpacing.lg),
 
-            // summary cards
-            Row(
-              children: [
-                Expanded(
-                  child: _StatCard(
-                    title: 'Skills',
-                    value: '$skillCount',
-                    color: AppColors.radarDeep,
-                  ),
-                ),
-                const SizedBox(width: AppSpacing.md),
-                Expanded(
-                  child: _StatCard(
-                    title: 'Match',
-                    value: ready ? '78%' : '--',
-                    color: AppColors.amber,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: AppSpacing.lg),
-
-            // main card
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(AppSpacing.lg),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Latest match', style: text.titleMedium),
-                    const SizedBox(height: AppSpacing.sm),
-                    Text(
-                      ready
-                          ? 'Senior Flutter Developer • 78% compatibility'
-                          : 'No analysis yet. Go to Analyze to compare a job offer.',
-                      style: text.bodyMedium,
-                    ),
-                    const SizedBox(height: AppSpacing.md),
-                    if (ready)
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: FilledButton(
-                          onPressed: () {},
-                          child: const Text('View details'),
-                        ),
-                      ),
-                  ],
-                ),
-              ),
+            // summary card
+            _StatCard(
+              title: 'Skills',
+              value: '$skillCount',
+              color: AppColors.radarDeep,
             ),
             const SizedBox(height: AppSpacing.lg),
 
@@ -195,7 +155,9 @@ class _HomeTab extends StatelessWidget {
                             onPressed: () {
                               Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (_) => const MySkillsPage()),
+                                MaterialPageRoute(
+                                  builder: (_) => const MySkillsPage(),
+                                ),
                               );
                             },
                             icon: const Icon(Icons.psychology_outlined),
@@ -205,9 +167,7 @@ class _HomeTab extends StatelessWidget {
                         const SizedBox(width: AppSpacing.sm),
                         Expanded(
                           child: OutlinedButton.icon(
-                            onPressed: () {
-                              // TODO: open analyze flow
-                            },
+                            onPressed: onAnalyze,
                             icon: const Icon(Icons.radar_outlined),
                             label: const Text('Analyze'),
                           ),
@@ -243,9 +203,9 @@ class _StatCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.12),
+        color: color.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(AppRadius.md),
-        border: Border.all(color: color.withOpacity(0.2)),
+        border: Border.all(color: color.withValues(alpha: 0.2)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -260,39 +220,6 @@ class _StatCard extends StatelessWidget {
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _PlaceholderTab extends StatelessWidget {
-  final IconData icon;
-  final String title;
-  final String subtitle;
-
-  const _PlaceholderTab({
-    required this.icon,
-    required this.title,
-    required this.subtitle,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final text = Theme.of(context).textTheme;
-
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(AppSpacing.lg),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, size: 64, color: Theme.of(context).colorScheme.primary),
-            const SizedBox(height: AppSpacing.md),
-            Text(title, style: text.headlineMedium, textAlign: TextAlign.center),
-            const SizedBox(height: AppSpacing.sm),
-            Text(subtitle, style: text.bodyMedium, textAlign: TextAlign.center),
-          ],
-        ),
       ),
     );
   }
@@ -325,7 +252,9 @@ class _ProfileTab extends StatelessWidget {
             leading: Icon(
               isDark ? Icons.light_mode_outlined : Icons.dark_mode_outlined,
             ),
-            title: Text(isDark ? 'Switch to light mode' : 'Switch to dark mode'),
+            title: Text(
+              isDark ? 'Switch to light mode' : 'Switch to dark mode',
+            ),
             onTap: toggleThemeMode,
           ),
         ),

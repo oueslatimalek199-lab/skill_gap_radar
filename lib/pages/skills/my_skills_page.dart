@@ -1,8 +1,9 @@
 // lib/pages/skills/my_skills_page.dart
 import 'package:flutter/material.dart';
 
-import '../../data/skills_store.dart';
+import '../../data/offers_store.dart';
 import '../../theme/app_theme.dart';
+import '../../data/skills_store.dart';
 
 const _suggestions = [
   'Flutter',
@@ -49,9 +50,9 @@ class _MySkillsPageState extends State<MySkillsPage> {
           valueListenable: mySkills,
           builder: (_, skills, __) {
             final available = _suggestions
-                .where((s) => !skills.any(
-                      (m) => m.toLowerCase() == s.toLowerCase(),
-                    ))
+                .where(
+                  (s) => !skills.any((m) => m.toLowerCase() == s.toLowerCase()),
+                )
                 .toList();
 
             return ListView(
@@ -91,12 +92,13 @@ class _MySkillsPageState extends State<MySkillsPage> {
                 const SizedBox(height: AppSpacing.lg),
 
                 // My skills
-                Text('Your skills (${skills.length})',
-                    style: text.titleMedium),
+                Text('Your skills (${skills.length})', style: text.titleMedium),
                 const SizedBox(height: AppSpacing.sm),
                 if (skills.isEmpty)
-                  Text('No skills yet. Add one above or tap a suggestion.',
-                      style: text.bodyMedium)
+                  Text(
+                    'No skills yet. Add one above or tap a suggestion.',
+                    style: text.bodyMedium,
+                  )
                 else
                   Wrap(
                     spacing: AppSpacing.sm,
