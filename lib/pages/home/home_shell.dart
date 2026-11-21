@@ -5,6 +5,7 @@ import '../../theme/app_theme.dart';
 import '../../theme/theme_controller.dart';
 import '../analyze/analyze_page.dart';
 import '../skills/my_skills_page.dart';
+import '../stats/stats_page.dart';
 import '../welcome/welcome_page.dart';
 import 'dashboard_page.dart';
 
@@ -25,6 +26,7 @@ class _HomeShellState extends State<HomeShell> {
       _HomeTab(onAnalyze: () => setState(() => _index = 2)),
       const DashboardPage(),
       const AnalyzePage(),
+      const StatsPage(),
       _ProfileTab(isGuest: widget.isGuest),
     ];
 
@@ -50,6 +52,11 @@ class _HomeShellState extends State<HomeShell> {
             icon: Icon(Icons.radar_outlined),
             selectedIcon: Icon(Icons.radar),
             label: 'Analyze',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.bar_chart_outlined),
+            selectedIcon: Icon(Icons.bar_chart),
+            label: 'Stats',
           ),
           NavigationDestination(
             icon: Icon(Icons.person_outline),

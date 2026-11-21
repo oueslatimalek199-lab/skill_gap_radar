@@ -180,7 +180,10 @@ class _MarketRadar extends StatelessWidget {
       for (final e in top) RadarEntry(value: e.value * 100 / list.length),
     ];
     final you = [
-      for (final e in top) RadarEntry(value: hasSkill(skills, e.key) ? 100 : 0),
+      for (final e in top)
+        RadarEntry(
+          value: hasSkill(skills, e.key) ? levelOf(e.key) * 100 / 3 : 0,
+        ),
     ];
 
     return Column(

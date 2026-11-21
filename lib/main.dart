@@ -6,11 +6,14 @@ import 'data/skills_store.dart';
 import 'pages/welcome/welcome_page.dart';
 import 'theme/app_theme.dart';
 import 'theme/theme_controller.dart';
+import 'data/stats_store.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await loadSkills();
   await loadOffers();
+  await loadHistory();
+  startTracking();
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   runApp(const SkillGapRadarApp());
 }

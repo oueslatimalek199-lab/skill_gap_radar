@@ -4,6 +4,10 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
+import 'dart:math' show min;
+
+import 'skills_store.dart';
+
 import 'api_config.dart';
 
 class Offer {
@@ -62,10 +66,20 @@ bool hasSkill(List<String> skills, String s) =>
     skills.any((m) => m.toLowerCase() == s.toLowerCase());
 
 /// Match score (0-100) between one offer and the user's skills.
+/// Level an offer is assumed to expect (2 = intermediate).
+const kRequiredLevel = 2;
+
+/// Match score (0-100): a skill at beginner level counts half,
+/// intermediate or advanced counts fully.
 int matchScore(Offer o, List<String> skills) {
   if (o.required.isEmpty) return 0;
-  final got = o.required.where((r) => hasSkill(skills, r)).length;
-  return (got * 100 / o.required.length).round();
+  var points = 0.0;
+  for (final r in o.required) {
+    if (hasSkill(skills, r)) {
+      points += min(levelOf(r), kRequiredLevel) / kRequiredLevel;
+    }
+  }
+  return (points * 100 / o.required.length).round();
 }
 
 int averageScore(List<Offer> list, List<String> skills) {
