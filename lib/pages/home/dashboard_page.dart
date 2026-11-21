@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import '../../data/offers_store.dart';
 import '../../data/skills_store.dart';
 import '../../theme/app_theme.dart';
+import '../learn/learning_path_page.dart';
 
 class DashboardPage extends StatelessWidget {
   const DashboardPage({super.key});
@@ -100,6 +101,20 @@ class DashboardPage extends StatelessWidget {
                                 children: [
                                   Expanded(
                                     child: Text(m.key, style: text.titleMedium),
+                                  ),
+                                  Align(
+                                    alignment: Alignment.centerRight,
+                                    child: TextButton.icon(
+                                      onPressed: () => Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (_) =>
+                                              const LearningPathPage(),
+                                        ),
+                                      ),
+                                      icon: const Icon(Icons.school_outlined),
+                                      label: const Text('Learning path'),
+                                    ),
                                   ),
                                   Text(
                                     '${m.value}/${list.length} offers',
