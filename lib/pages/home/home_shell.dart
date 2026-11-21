@@ -8,6 +8,8 @@ import '../skills/my_skills_page.dart';
 import '../stats/stats_page.dart';
 import '../welcome/welcome_page.dart';
 import 'dashboard_page.dart';
+import '../../data/auth_store.dart';
+import '../../data/session.dart';
 
 class HomeShell extends StatefulWidget {
   final bool isGuest;
@@ -250,7 +252,7 @@ class _ProfileTab extends StatelessWidget {
         Text(
           isGuest
               ? 'You are using the app as a guest. Your data stays on this device.'
-              : 'You are logged in.',
+              : 'Logged in as $userName.',
           style: text.bodyMedium,
         ),
         const SizedBox(height: AppSpacing.lg),
@@ -279,7 +281,10 @@ class _ProfileTab extends StatelessWidget {
         ),
         const SizedBox(height: AppSpacing.lg),
         OutlinedButton(
-          onPressed: () {
+          onPressed: () async {
+            await logout();
+            clearAllData();
+            if (!context.mounted) return;
             Navigator.pushAndRemoveUntil(
               context,
               MaterialPageRoute(builder: (_) => const WelcomePage()),

@@ -1,7 +1,6 @@
 // lib/pages/skills/my_skills_page.dart
 import 'package:flutter/material.dart';
 
-import '../../data/offers_store.dart';
 import '../../theme/app_theme.dart';
 import '../../data/skills_store.dart';
 
@@ -132,7 +131,7 @@ class _MySkillsPageState extends State<MySkillsPage> {
 }
 
 class _SkillTile extends StatelessWidget {
-  const _SkillTile({super.key, required this.name});
+  const _SkillTile({required this.name});
 
   final String name;
 

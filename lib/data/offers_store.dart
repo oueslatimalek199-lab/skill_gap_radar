@@ -1,14 +1,10 @@
-// lib/data/offers_store.dart
 import 'dart:convert';
-
-import 'package:flutter/foundation.dart';
-import 'package:http/http.dart' as http;
-
 import 'dart:math' show min;
 
-import 'skills_store.dart';
+import 'package:flutter/foundation.dart';
 
-import 'api_config.dart';
+import 'api_client.dart';
+import 'skills_store.dart';
 
 class Offer {
   final String title;
@@ -30,36 +26,40 @@ class Offer {
 }
 
 /// Offers saved by the user. Filled from the API at startup.
-final ValueNotifier<List<Offer>> offers = ValueNotifier<List<Offer>>([]);
+/// Sample offers: what guests see, and what new accounts start with.
+const sampleOffers = [
+  Offer('Data Analyst Intern', 'Company A', [
+    'SQL',
+    'Power BI',
+    'Python',
+    'Git',
+  ]),
+  Offer('Flutter Developer', 'Company B', ['Flutter', 'Dart', 'Git', 'Docker']),
+  Offer('Full Stack Developer', 'Company C', [
+    'React',
+    'Node.js',
+    'Docker',
+    'Git',
+  ]),
+  Offer('BI Developer', 'Company D', ['SQL', 'Power BI', 'Python', 'Docker']),
+];
+
+/// Offers on screen. Guests see the samples, accounts load theirs from the API.
+final ValueNotifier<List<Offer>> offers = ValueNotifier<List<Offer>>(
+  List.of(sampleOffers),
+);
 
 Future<void> loadOffers() async {
-  try {
-    final r = await http.get(Uri.parse('$apiBase/offers'));
-    if (r.statusCode == 200) {
-      offers.value = (jsonDecode(r.body) as List)
-          .map((e) => Offer.fromJson(e as Map<String, dynamic>))
-          .toList();
-    }
-  } catch (_) {
-    // API offline: keep whatever is in memory
-  }
+  final r = await api('GET', '/offers');
+  if (r == null || r.statusCode != 200) return;
+  offers.value = (jsonDecode(r.body) as List)
+      .map((e) => Offer.fromJson(e as Map<String, dynamic>))
+      .toList();
 }
 
 void addOffer(Offer o) {
   offers.value = [o, ...offers.value];
-  _post(o);
-}
-
-Future<void> _post(Offer o) async {
-  try {
-    await http.post(
-      Uri.parse('$apiBase/offers'),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode(o.toJson()),
-    );
-  } catch (_) {
-    // API offline: the offer stays in memory only
-  }
+  api('POST', '/offers', o.toJson());
 }
 
 bool hasSkill(List<String> skills, String s) =>
